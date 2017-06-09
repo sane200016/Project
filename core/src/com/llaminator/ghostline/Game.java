@@ -8,29 +8,77 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
+
 public class Game extends ApplicationAdapter {
 	OrthographicCamera camera;
-	SpriteBatch batch;
-	Texture img;
+	SpriteBatch MRoute;
+	SpriteBatch MGh;
 	Route GameRoute;
+	Ghost Gh;
+	double x = 0, y = 0, x0 = 10, y0 = 10;
+	double speedX = 30, speedY = 0;
+	int cnt = 1;
 
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 800, 480);
-		batch = new SpriteBatch();
+		camera.setToOrtho(false, 600, 480);
+		MRoute = new SpriteBatch();
+		MGh = new SpriteBatch();
+		GameRoute = new Route();
+		Gh = new Ghost(x0 + 10, y0 + 10);
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		GameRoute = new Route();
-		for (int i = 0; i < Route.Size; i++) {
-			batch.draw(GameRoute.Level[i].Step, 20, 20);
+
+		MRoute.begin();
+		x = x0;
+		y = y0;
+		//System.out.println(GameRoute.Level.size());
+		for (int i = 0; i < GameRoute.Level.size(); i++){
+			MRoute.draw(GameRoute.Level.get(i).Step, (float)x, (float) y);
+			if (GameRoute.Level.get(i).getDir() == 1)
+				x += GameRoute.Level.get(i).Step.getWidth();
+			else
+				y += GameRoute.Level.get(i).Step.getHeight();
 		}
-		batch.end();
+		MRoute.end();
+
+		MGh.begin();
+
+		//System.out.println(Gh.x + " " + Gh.y);
+
+		Gh.x += speedX * Gdx.graphics.getDeltaTime();
+
+		Gh.y += speedY * Gdx.graphics.getDeltaTime();
+
+		MGh.draw(new Texture(Gdx.files.internal("ghost.png")), (float)Gh.x, (float)Gh.y);
+
+		System.out.println(camera.position.x + " " + camera.position.y);
+
+		//camera.position.set( (float)Gh.x, (float)Gh.y, 0 );
+		camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
+		camera.update();
+
+		MGh.end();
+
+
+		if (Gh.x - x0 * cnt > GameRoute.Level.get(0).Step.getHeight()) {
+			GameRoute.ExpandLevel();
+			cnt++;
+		}
+
+		if (Gdx.input.justTouched()) {
+			double tmp = speedX;
+			speedX = speedY;
+			speedY = tmp;
+
+		}
 	}
 
 	@Override
@@ -52,7 +100,7 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		super.dispose();
-		batch.dispose();
+		MRoute.dispose();
 
 	}
 
