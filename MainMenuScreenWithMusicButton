@@ -1,0 +1,174 @@
+package com.mygdx.game;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.sun.corba.se.spi.orbutil.fsm.FSM;
+import com.sun.corba.se.spi.orbutil.fsm.Input;
+import com.sun.corba.se.spi.orbutil.fsm.State;
+
+import sun.rmi.runtime.Log;
+
+import static java.lang.System.*;
+import static sun.awt.X11.XConstants.buttons;
+
+
+// Created by user on 6/8/17.
+
+
+public class MainMenuScreen implements Screen {
+
+    final GameG game;
+    OrthographicCamera camera;
+    String startString;
+    Texture img;
+    boolean Sound = true;
+   // ImageButton SoundOff;
+//    ImageButton button;
+//    ImageButton.ImageButtonStyle buttonStyle;
+   // Button SoundButton;
+
+   // Texture Button;
+    Music StartMusic;
+    Music PlayMusic;
+
+
+    TextButton button;
+
+
+    public MainMenuScreen(GameG gam) {
+        this.game = gam;
+
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 685,990);
+        img = new Texture("castleNew.jpg");
+       // SoundButton = new Button();
+        //Button = new Texture("soundButtonNew.jpg");
+        StartMusic = Gdx.audio.newMusic(Gdx.files.internal("Esther_Garcia_-_Looking_at_the_Stars.mp3"));
+        //PlayMusic = Gdx.audio.newMusic(Gdx.files.internal("Esther_Garcia_-_Crossing_the_Universe.mp3"));
+
+       // TextureAtlas buttonAtlas = Assets.manager.get();
+       // Skin buttonSkin = new Skin(buttonAtlas);
+       // ImageButton.ImageButtonStyle gameConnect = new ImageButton.ImageButtonStyle();
+       // gameConnect.up = buttonSkin.getDrawable();
+       // gameConnect.over = buttonSkin.getDrawable();
+       // gameConnect.down = buttonSkin.getDrawable();
+
+        //SoundOff = new ImageButton(gameConnect);
+
+
+
+        StartMusic.play();
+        StartMusic.setLooping(true);
+        //PlayButton = new Texture("playButtonNew.jpg");
+        //SoundButton = new Texture("soundButtonNew");
+
+
+
+    }
+
+    @Override
+    public void show() {
+        TextureAtlas textureAtlas = new TextureAtlas(Gdx.files.internal("button.pack"));
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        Skin skin = new Skin();
+        skin.addRegions(textureAtlas);
+        textButtonStyle.font = new BitmapFont();
+        textButtonStyle.up = skin.getDrawable("soundButtonNew");
+        textButtonStyle.down = skin.getDrawable("soundButtonNew");
+        textButtonStyle.checked = skin.getDrawable("soundButtonNew");
+        button = new TextButton("", textButtonStyle);
+        button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                StartMusic.stop();
+            }
+        });
+    }
+
+    @Override
+    public void render(float delta) {
+        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        game.batch.begin();
+        game.batch.draw(img, 0, 0);
+
+        //game.batch.draw(Button, 540, 600);
+        this.startString = "Press to start";
+        game.font.draw(game.batch, startString , 280, 700);
+        if(Gdx.input.justTouched()){
+            game.font.draw(game.batch, "Go" , 50, 700);
+        }
+
+        button.draw(game.batch, 1.0f);
+        button.setTouchable(Touchable.disabled);
+        Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+
+        if ((touchPos.x > button.getX() && touchPos.x < button.getX() + button.getHeight()) && (touchPos.x > button.getX() && touchPos.x < button.getX() + button.getHeight())) {
+
+            if (Sound == false) {
+                StartMusic.play();
+                StartMusic.setLooping(true);
+                Sound = true;
+            }
+            else {
+                StartMusic.pause();
+                Sound = false;
+            }
+            game.font.draw(game.batch, "Robit" , 500, 700);
+
+        }
+
+        game.batch.end();
+    }
+
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+        img.dispose();
+        //game.dispose();
+        //game.batch.dispose();
+
+    }
+}
+
+
+
+
